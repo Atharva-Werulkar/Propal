@@ -15,8 +15,8 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: Color(0xFF1A1E29),
-        primaryColor: Color(0xFF242A38),
+        scaffoldBackgroundColor: const Color(0xFF1A1E29),
+        primaryColor: const Color(0xFF242A38),
       ),
     );
   }
