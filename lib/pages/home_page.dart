@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
-import 'package:propal/bloc/chat_bloc_bloc.dart';
+import 'package:propal/utils/constants.dart';
+import 'package:propal/widgets/messagecard.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,190 +13,231 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ChatBlocBloc chatBloc = ChatBlocBloc();
-  TextEditingController textEditingController = TextEditingController();
+  late final GenerativeModel _model;
+  late final ChatSession _chat;
+
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textController = TextEditingController();
+  final FocusNode _textFieldFocus = FocusNode();
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _model = GenerativeModel(
+      model: 'gemini-pro',
+      apiKey: api_key,
+    );
+    _chat = _model.startChat();
+  }
+
+  void _scrollDown() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(
+          milliseconds: 750,
+        ),
+        curve: Curves.easeOutCirc,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    var textFieldDecoration = InputDecoration(
+      contentPadding: const EdgeInsets.all(15),
+      hintText: "Ask Something to Pal..",
+      hintStyle: const TextStyle(
+        color: Color(0xFFD7D1F1),
+      ),
+      border: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(14),
+        ),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(14),
+        ),
+        borderSide: BorderSide(
+          color: Theme.of(context).colorScheme.secondary,
+        ),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: ThemeData.dark().primaryColor,
+        backgroundColor: const Color(0xFF242A38),
         title: const Text('Propal'),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(
-            Icons.menu,
+            Iconsax.menu_1,
             size: 30,
           ),
           onPressed: () {},
         ),
         automaticallyImplyLeading: true,
-        actions: [
-          //profile picture
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: CircleAvatar(
-              radius: 25,
-              backgroundColor: const Color(0xFFB3AAF2),
-              child: IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: () {},
-              ),
-            ),
-          )
-        ],
       ),
-      body: BlocConsumer<ChatBlocBloc, ChatBlocState>(
-        bloc: chatBloc,
-        listener: (context, state) {
-          // TODO: implement listener
-        },
-        builder: (context, state) {
-          switch (state.runtimeType) {
-            case ChatBlocInitial:
-              return const Center(
-                child: Text("Initial"),
-              );
-            case ChatSuccessState:
-              final messages = (state as ChatSuccessState).messages;
+      backgroundColor: const Color(0xFF1B1F2B),
+      body: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: api_key.isNotEmpty
+                  ? ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      controller: _scrollController,
+                      itemBuilder: (context, idx) {
+                        var content = _chat.history.toList()[idx];
 
-              return Container(
-                height: double.maxFinite,
-                width: double.maxFinite,
-                color: ThemeData.dark().scaffoldBackgroundColor,
-                child: Column(
+                        var text = content.parts
+                            .whereType<TextPart>()
+                            .map<String>((e) => e.text)
+                            .join('');
+
+                        return MessageWidget(
+                          text: text,
+                          isFromUser: content.role == 'user',
+                        );
+                      },
+                      itemCount: _chat.history.length,
+                    )
+                  : ListView(
+                      children: const [
+                        Text('No API key found. Please provide an API Key.'),
+                      ],
+                    ),
+            ),
+            if (_loading)
+              Lottie.asset('assets/loader.json', height: 100, width: 100),
+            Container(
+              color: const Color(0xFF242A38),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 25,
+                  horizontal: 15,
+                ),
+                child: Row(
                   children: [
                     Expanded(
-                      child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 10),
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            return Row(
-                              mainAxisAlignment: messages[index].role == "user"
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                              children: [
-                                if (messages[index].role == "user")
-                                  CircleAvatar(
-                                    radius: 25,
-                                    backgroundColor: const Color(0xFFB3AAF2),
-                                    child: IconButton(
-                                      icon: const Icon(Icons.person),
-                                      onPressed: () {},
-                                    ),
-                                  ),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(16),
-                                    margin: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 8),
-                                    decoration: BoxDecoration(
-                                        color: messages[index].role == "user"
-                                            ? const Color(0xFFB3AAF2)
-                                            : const Color(0xFF242A38),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Column(
-                                      children: messages[index]
-                                          .parts
-                                          .map((e) => SizedBox(
-                                                child: Text(
-                                                  textAlign:
-                                                      messages[index].role ==
-                                                              "model"
-                                                          ? TextAlign.start
-                                                          : TextAlign.end,
-                                                  softWrap: true,
-                                                  overflow: TextOverflow.clip,
-                                                  e.text,
-                                                  style: const TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 20),
-                                                ),
-                                              ))
-                                          .toList(),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            );
-                          }),
-                    ),
-                    if (chatBloc.generating)
-                      Lottie.asset(
-                        "assets/loader.json",
-                        height: 150,
-                        width: 150,
-                        repeat: true,
-                      ),
-                    Container(
-                      color: ThemeData.dark().primaryColor,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 15),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: textEditingController,
-                              style: const TextStyle(
-                                  color: Color(0xFFD7D1F1), fontSize: 20),
-                              cursorColor: const Color(0xFFB3AAF2),
-                              decoration: InputDecoration(
-                                  hintText: "Ask Something to Pal",
-                                  hintStyle: const TextStyle(
-                                    fontSize: 20,
-                                    color: Color(0xFFD7D1F1),
-                                  ),
-                                  filled: true,
-                                  fillColor: ThemeData.dark().primaryColor,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                        width: 2),
-                                    borderRadius: BorderRadius.circular(100),
-                                  )),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          InkWell(
-                            onTap: () {
-                              if (textEditingController.text.isNotEmpty) {
-                                final text = textEditingController.text;
-                                textEditingController.clear();
-                                chatBloc.add(
-                                    ChatGenerationEvent(inputMessage: text));
-                              }
-                            },
-                            child: CircleAvatar(
-                              backgroundColor: const Color(0xFFD7D1F1),
-                              radius: 32,
-                              child: CircleAvatar(
-                                radius: 30,
-                                backgroundColor: const Color(0xFFB3AAF2),
-                                child: Icon(Icons.send,
-                                    size: 30,
-                                    color: ThemeData.dark().primaryColor),
-                              ),
-                            ),
-                          )
-                        ],
+                      child: TextField(
+                        minLines: 1, // Minimum 3 lines
+                        maxLines: 5, // Up to 5 lines
+                        style: const TextStyle(
+                            color: Color(0xFFD7D1F1), fontSize: 20),
+                        cursorColor: const Color(0xFFB3AAF2),
+                        autofocus: true,
+                        focusNode: _textFieldFocus,
+                        decoration: textFieldDecoration,
+                        controller: _textController,
+                        onSubmitted: (String value) {
+                          _sendChatMessage(value);
+                        },
                       ),
                     ),
+                    const SizedBox.square(
+                      dimension: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: IconButton(
+                        onPressed: () async {
+                          _sendChatMessage(_textController.text);
+                          _textController.clear();
+                        },
+                        icon: Icon(Iconsax.send_2,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: 35),
+                      ),
+                    )
                   ],
                 ),
-              );
-
-            default:
-              return const Center(
-                child: Text("Default"),
-              );
-          }
-        },
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Future<void> _sendChatMessage(String message) async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      var response = await _chat.sendMessage(
+        Content.text(message),
+      );
+
+      var text = response.text;
+
+      if (text == null) {
+        _showError('No response from API.');
+        return;
+      } else {
+        setState(() {
+          _loading = false;
+          _scrollDown();
+        });
+      }
+    } catch (e) {
+      _showError(e.toString());
+      setState(() {
+        _loading = false;
+      });
+    } finally {
+      _textController.clear();
+      setState(() {
+        _loading = false;
+      });
+      _textFieldFocus.requestFocus();
+    }
+  }
+
+  void _showError(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Something went wrong',
+            style: TextStyle(
+              color: Color(0xFFD7D1F1),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: SelectableText(
+              message,
+              style: const TextStyle(
+                color: Color(0xFFD7D1F1),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  color: Color(0xFFD7D1F1),
+                ),
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 }
