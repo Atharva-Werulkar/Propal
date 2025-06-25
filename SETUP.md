@@ -34,7 +34,7 @@ This guide provides step-by-step instructions for setting up the Propal AI Codin
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/propal.git
+git clone https://github.com/Atharva-Werulkar/propal.git
 
 # Navigate to project directory
 cd propal
