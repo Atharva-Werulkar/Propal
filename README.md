@@ -1,16 +1,60 @@
-# propal
+# ProPal
 
-A new Flutter project.
+### ProPall is a conversational AI chatbot, inspired by Gemini, that leverages the power of the Gemini API to answer your questions in an informative and comprehensive way.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+* **Wide-ranging Knowledge:** PropAl can address a vast array of topics, from factual inquiries to open ended or creative prompts.
+* **Gemini Powered:** Built upon the robust Gemini API, PropAl delivers insightful and informative responses.
+* **Flutter UI:** PropAl boasts a user-friendly and intuitive interface built with the Flutter framework, ensuring a smooth user experience.
 
-A few resources to get you started if this is your first Flutter project:
+## User Interface
+<img width="3320" alt="Group 13" src="https://github.com/Atharva-Werulkar/Propal/assets/110187613/ff4faa0e-a4e5-4bab-a59d-a998c2d867d4">
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+## 💻Installation
+
+* Clone the Repository and Change the directory.
+
+```bash
+  flutter pub get
+  flutter run
+```
+    
+## 🧑🏻‍💻Run 
+
+Clone the repository and change directory.
+
+```bash
+  git clone https://github.com/Atharva-Werulkar/Propal.git
+```
+
+Go to the project directory
+
+```bash
+  cd propal
+```
+
+Flutter pub get and run
+```bash
+  flutter pub get
+  flutter run
+```
+## 📄License
+
+Distributed under the MIT License. See [License](https://choosealicense.com/licenses/mit/) for more information.
+
+
+## 🖊️Authors
+
+- [Atharva Werulkar](https://github.com/Atharva-Werulkar) - (werulkaratharva@gmail.com)
+
+
+## Contributing
+
+Contributions are always welcome! Your feedback will help us grow as a developer and build better and more reusable apps.
+
+Please adhere to this project's `code of conduct`.
+
+
