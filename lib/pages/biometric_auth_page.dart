@@ -87,17 +87,11 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
               // App Logo
               Center(
                 child: Container(
-                  width: 100,
-                  height: 100,
+                  height: MediaQuery.of(context).size.width * 0.4,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1),
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Icon(
-                    Icons.code,
-                    color: Colors.white,
-                    size: 50,
-                  ),
+                  child: Image.asset('assets/logo.png'),
                 ),
               ),
 
