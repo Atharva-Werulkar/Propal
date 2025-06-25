@@ -93,8 +93,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1E29),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -110,12 +111,12 @@ class _LoginPageState extends State<LoginPage> {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1),
+                      color: theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.code,
-                      color: Colors.white,
+                      color: theme.colorScheme.onPrimary,
                       size: 40,
                     ),
                   ),
@@ -125,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                     style: GoogleFonts.sourceCodePro(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -133,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                     'Your AI Coding Assistant',
                     style: GoogleFonts.sourceCodePro(
                       fontSize: 16,
-                      color: Colors.white70,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -150,10 +151,10 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: const Color(0xFF6366F1),
+                      color: theme.colorScheme.primary,
                       width: 3,
                     ),
-                    color: const Color(0xFF242A38),
+                    color: theme.colorScheme.surfaceContainerHighest,
                   ),
                   child: _profileImage != null
                       ? ClipOval(
@@ -162,9 +163,9 @@ class _LoginPageState extends State<LoginPage> {
                             fit: BoxFit.cover,
                           ),
                         )
-                      : const Icon(
+                      : Icon(
                           Icons.add_a_photo,
-                          color: Color(0xFF6366F1),
+                          color: theme.colorScheme.primary,
                           size: 40,
                         ),
                 ),
@@ -173,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 'Tap to add profile picture',
                 style: GoogleFonts.sourceCodePro(
-                  color: Colors.white70,
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
                   fontSize: 12,
                 ),
               ),
@@ -183,25 +184,27 @@ class _LoginPageState extends State<LoginPage> {
               // Name Field
               TextField(
                 controller: _nameController,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.colorScheme.onSurface),
                 decoration: InputDecoration(
                   labelText: 'Name',
-                  labelStyle: const TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
                   hintText: 'Enter your name',
-                  hintStyle: const TextStyle(color: Colors.white54),
+                  hintStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.5)),
                   filled: true,
-                  fillColor: const Color(0xFF242A38),
+                  fillColor: theme.colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF6366F1)),
+                    borderSide: BorderSide(color: theme.colorScheme.primary),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        const BorderSide(color: Color(0xFF6366F1), width: 2),
+                        BorderSide(color: theme.colorScheme.primary, width: 2),
                   ),
                   prefixIcon:
-                      const Icon(Icons.person, color: Color(0xFF6366F1)),
+                      Icon(Icons.person, color: theme.colorScheme.primary),
                 ),
               ),
 
@@ -210,24 +213,27 @@ class _LoginPageState extends State<LoginPage> {
               // Email Field
               TextField(
                 controller: _emailController,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: theme.colorScheme.onSurface),
                 decoration: InputDecoration(
                   labelText: 'Email',
-                  labelStyle: const TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.7)),
                   hintText: 'Enter your email',
-                  hintStyle: const TextStyle(color: Colors.white54),
+                  hintStyle: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.5)),
                   filled: true,
-                  fillColor: const Color(0xFF242A38),
+                  fillColor: theme.colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF6366F1)),
+                    borderSide: BorderSide(color: theme.colorScheme.primary),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide:
-                        const BorderSide(color: Color(0xFF6366F1), width: 2),
+                        BorderSide(color: theme.colorScheme.primary, width: 2),
                   ),
-                  prefixIcon: const Icon(Icons.email, color: Color(0xFF6366F1)),
+                  prefixIcon:
+                      Icon(Icons.email, color: theme.colorScheme.primary),
                 ),
               ),
 
@@ -238,20 +244,20 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF242A38),
+                    color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: const Color(0xFF6366F1).withOpacity(0.3)),
+                        color: theme.colorScheme.primary.withOpacity(0.3)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.fingerprint, color: Color(0xFF6366F1)),
+                      Icon(Icons.fingerprint, color: theme.colorScheme.primary),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'Enable Biometric Authentication',
                           style: GoogleFonts.sourceCodePro(
-                            color: Colors.white,
+                            color: theme.colorScheme.onSurface,
                             fontSize: 14,
                           ),
                         ),
@@ -263,7 +269,7 @@ class _LoginPageState extends State<LoginPage> {
                             _biometricEnabled = value;
                           });
                         },
-                        activeColor: const Color(0xFF6366F1),
+                        activeColor: theme.colorScheme.primary,
                       ),
                     ],
                   ),
@@ -278,19 +284,19 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   onPressed: _loading ? null : _createAccount,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1),
-                    foregroundColor: Colors.white,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
                   child: _loading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: theme.colorScheme.onPrimary,
                             strokeWidth: 2,
                           ),
                         )

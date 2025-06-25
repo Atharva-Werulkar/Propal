@@ -94,17 +94,19 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final currentSession = _chatService.currentSession;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1E29),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF242A38),
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         title: Text(
           currentSession?.title ?? 'Propal',
           style: GoogleFonts.sourceCodePro(
             fontSize: 18,
             fontWeight: FontWeight.w600,
+            color: theme.appBarTheme.foregroundColor,
           ),
         ),
         centerTitle: true,
@@ -162,8 +164,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildDrawer() {
+    final theme = Theme.of(context);
     return Drawer(
-      backgroundColor: const Color(0xFF242A38),
+      backgroundColor: theme.colorScheme.surface,
       child: SafeArea(
         child: Column(
           children: [
@@ -175,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                   // Profile Picture
                   CircleAvatar(
                     radius: 40,
-                    backgroundColor: const Color(0xFF6366F1),
+                    backgroundColor: theme.colorScheme.primary,
                     backgroundImage: _currentUser?.profileImagePath != null
                         ? FileImage(File(_currentUser!.profileImagePath!))
                         : null,
@@ -183,10 +186,10 @@ class _HomePageState extends State<HomePage> {
                         ? Text(
                             _currentUser?.name.substring(0, 1).toUpperCase() ??
                                 'U',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimary,
                             ),
                           )
                         : null,
@@ -197,33 +200,35 @@ class _HomePageState extends State<HomePage> {
                     style: GoogleFonts.sourceCodePro(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                   Text(
                     _currentUser?.email ?? '',
                     style: GoogleFonts.sourceCodePro(
                       fontSize: 14,
-                      color: Colors.white70,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const Divider(color: Colors.white24),
+            Divider(color: theme.dividerColor),
 
             // New Chat Button
             ListTile(
-              leading: const Icon(Iconsax.add_circle, color: Color(0xFF6366F1)),
+              leading:
+                  Icon(Iconsax.add_circle, color: theme.colorScheme.primary),
               title: Text(
                 'New Chat',
-                style: GoogleFonts.sourceCodePro(color: Colors.white),
+                style: GoogleFonts.sourceCodePro(
+                    color: theme.colorScheme.onSurface),
               ),
               onTap: _startNewChat,
             ),
 
-            const Divider(color: Colors.white24),
+            Divider(color: theme.dividerColor),
 
             // Chat History
             Expanded(
@@ -232,7 +237,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text(
                         'No chat history',
                         style: GoogleFonts.sourceCodePro(
-                          color: Colors.white54,
+                          color: theme.colorScheme.onSurface.withOpacity(0.5),
                           fontSize: 14,
                         ),
                       ),
@@ -243,13 +248,12 @@ class _HomePageState extends State<HomePage> {
                         final session = _chatSessions[index];
                         final isSelected =
                             _chatService.currentSession?.id == session.id;
-
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? const Color(0xFF6366F1).withOpacity(0.1)
+                                ? theme.colorScheme.primary.withOpacity(0.1)
                                 : null,
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -258,8 +262,8 @@ class _HomePageState extends State<HomePage> {
                               session.title,
                               style: GoogleFonts.sourceCodePro(
                                 color: isSelected
-                                    ? const Color(0xFF6366F1)
-                                    : Colors.white,
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.onSurface,
                                 fontSize: 14,
                               ),
                               maxLines: 1,
@@ -268,14 +272,15 @@ class _HomePageState extends State<HomePage> {
                             subtitle: Text(
                               '${session.messages.length} messages',
                               style: GoogleFonts.sourceCodePro(
-                                color: Colors.white54,
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
                                 fontSize: 12,
                               ),
                             ),
                             onTap: () => _loadChatSession(session.id),
                             trailing: IconButton(
-                              icon: const Icon(Iconsax.trash,
-                                  size: 18, color: Colors.red),
+                              icon: Icon(Iconsax.trash,
+                                  size: 18, color: theme.colorScheme.error),
                               onPressed: () => _deleteChatSession(session.id),
                             ),
                           ),
@@ -284,14 +289,16 @@ class _HomePageState extends State<HomePage> {
                     ),
             ),
 
-            const Divider(color: Colors.white24),
+            Divider(color: theme.dividerColor),
 
             // Settings & Logout
             ListTile(
-              leading: const Icon(Iconsax.setting_2, color: Colors.white70),
+              leading: Icon(Iconsax.setting_2,
+                  color: theme.colorScheme.onSurface.withOpacity(0.7)),
               title: Text(
                 'Settings',
-                style: GoogleFonts.sourceCodePro(color: Colors.white),
+                style: GoogleFonts.sourceCodePro(
+                    color: theme.colorScheme.onSurface),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -301,10 +308,11 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Iconsax.logout, color: Colors.red),
+              leading: Icon(Iconsax.logout, color: theme.colorScheme.error),
               title: Text(
                 'Logout',
-                style: GoogleFonts.sourceCodePro(color: Colors.red),
+                style:
+                    GoogleFonts.sourceCodePro(color: theme.colorScheme.error),
               ),
               onTap: _logout,
             ),
@@ -317,6 +325,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildWelcomeScreen() {
+    final theme = Theme.of(context);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32.0),
       child: Column(
@@ -328,7 +337,6 @@ class _HomePageState extends State<HomePage> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
             ),
-           
             child: Image.asset('assets/logo.png'),
           ),
           const SizedBox(height: 32),
@@ -337,7 +345,7 @@ class _HomePageState extends State<HomePage> {
             style: GoogleFonts.sourceCodePro(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16),
@@ -346,7 +354,7 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
             style: GoogleFonts.sourceCodePro(
               fontSize: 16,
-              color: Colors.white70,
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
               height: 1.5,
             ),
           ),
@@ -368,6 +376,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSuggestionChip(String text) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () {
         _textController.text = text;
@@ -376,14 +385,14 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF242A38),
+          color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF6366F1).withOpacity(0.3)),
+          border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
         ),
         child: Text(
           text,
           style: GoogleFonts.sourceCodePro(
-            color: const Color(0xFF6366F1),
+            color: theme.colorScheme.primary,
             fontSize: 14,
           ),
         ),
@@ -392,8 +401,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildInputArea() {
+    final theme = Theme.of(context);
     return Container(
-      color: const Color(0xFF242A38),
+      color: theme.colorScheme.surface,
       padding: const EdgeInsets.all(16),
       constraints: const BoxConstraints(
         maxHeight: 120, // Limit max height to prevent overflow
@@ -406,7 +416,7 @@ class _HomePageState extends State<HomePage> {
                 controller: _textController,
                 focusNode: _textFieldFocus,
                 style: GoogleFonts.sourceCodePro(
-                  color: Colors.white,
+                  color: theme.colorScheme.onSurface,
                   fontSize: 16,
                 ),
                 maxLines: 3, // Limit max lines
@@ -414,18 +424,18 @@ class _HomePageState extends State<HomePage> {
                 decoration: InputDecoration(
                   hintText: 'Ask me anything about coding...',
                   hintStyle: GoogleFonts.sourceCodePro(
-                    color: Colors.white54,
+                    color: theme.colorScheme.onSurface.withOpacity(0.5),
                   ),
                   filled: true,
-                  fillColor: const Color(0xFF1A1E29),
+                  fillColor: theme.colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
-                    borderSide: const BorderSide(color: Color(0xFF6366F1)),
+                    borderSide: BorderSide(color: theme.colorScheme.primary),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(25),
                     borderSide:
-                        const BorderSide(color: Color(0xFF6366F1), width: 2),
+                        BorderSide(color: theme.colorScheme.primary, width: 2),
                   ),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -435,15 +445,15 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(width: 12),
             Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF6366F1),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
                 shape: BoxShape.circle,
               ),
               child: IconButton(
                 onPressed: _loading ? null : _sendMessage,
-                icon: const Icon(
+                icon: Icon(
                   Iconsax.send_2,
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                   size: 20,
                 ),
               ),

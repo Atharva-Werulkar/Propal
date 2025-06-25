@@ -36,7 +36,7 @@ class MessageWidget extends StatelessWidget {
           const SnackBar(
             content: Text('Copied to clipboard'),
             duration: Duration(seconds: 2),
-            backgroundColor: Color(0xFFB3AAF2),
+            backgroundColor: Colors.orange,
           ),
         );
       }
@@ -44,7 +44,7 @@ class MessageWidget extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to copy text: ${e.toString()}'),
+            content: Text('Failed to copy text: \\${e.toString()}'),
             duration: const Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -55,6 +55,9 @@ class MessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
       child: Column(
@@ -63,12 +66,12 @@ class MessageWidget extends StatelessWidget {
         children: [
           // Avatar
           if (isFromUser)
-            const Padding(
-              padding: EdgeInsets.only(right: 10.0),
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
               child: CircleAvatar(
                 radius: 20,
-                backgroundColor: Color(0xFFB3AAF2),
-                child: Icon(Iconsax.user),
+                backgroundColor: theme.colorScheme.primary,
+                child: const Icon(Iconsax.user),
               ),
             )
           else
@@ -96,8 +99,8 @@ class MessageWidget extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: isFromUser
-                        ? const Color(0xFFB3AAF2)
-                        : const Color(0xFF242A38),
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(18),
                   ),
                   padding: const EdgeInsets.symmetric(
@@ -109,47 +112,63 @@ class MessageWidget extends StatelessWidget {
                     child: MarkdownBody(
                       softLineBreak: true,
                       styleSheet: MarkdownStyleSheet(
-                        blockquote: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        blockquote: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        checkbox: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        checkbox: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        h1: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        h1: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        del: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        del: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        em: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        em: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        listBullet: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        listBullet: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        strong: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        strong: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
-                        tableBody: const TextStyle(
-                          color: Color(0xFFFFFFFF),
+                        tableBody: TextStyle(
+                          color: isFromUser
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                         code: TextStyle(
                           decorationColor: isFromUser
-                              ? const Color(0xFF242A38)
-                              : const Color(0xFFFFFFFF),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                           color: isFromUser
-                              ? const Color(0xFF242A38)
-                              : const Color(0xFFFFFFFF),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                         a: TextStyle(
                           color: isFromUser
-                              ? const Color(0xFF242A38)
-                              : const Color(0xFFFFFFFF),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                         p: TextStyle(
                           color: isFromUser
-                              ? const Color(0xFF242A38)
-                              : const Color(0xFFFFFFFF),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       styleSheetTheme: MarkdownStyleSheetBaseTheme.cupertino,
@@ -181,26 +200,30 @@ class MessageWidget extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF3A4356),
+                          color: isDark
+                              ? const Color(0xFF3A4356)
+                              : theme.colorScheme.surface,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: const Color(0xFF5A6B7D),
+                            color: isDark
+                                ? const Color(0xFF5A6B7D)
+                                : theme.colorScheme.outline.withOpacity(0.3),
                             width: 1,
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Iconsax.copy,
                               size: 14,
-                              color: Color(0xFFB3AAF2),
+                              color: theme.colorScheme.primary,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               'Copy',
                               style: TextStyle(
-                                color: Color(0xFFB3AAF2),
+                                color: theme.colorScheme.primary,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),

@@ -74,8 +74,9 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1E29),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -102,7 +103,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 style: GoogleFonts.sourceCodePro(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
 
@@ -112,7 +113,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 'Please authenticate to continue',
                 style: GoogleFonts.sourceCodePro(
                   fontSize: 16,
-                  color: Colors.white70,
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
                 ),
               ),
 
@@ -126,16 +127,16 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF242A38),
+                        color: theme.colorScheme.surfaceContainerHighest,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF6366F1),
+                          color: theme.colorScheme.primary,
                           width: 2,
                         ),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Iconsax.finger_scan,
-                        color: Color(0xFF6366F1),
+                        color: theme.colorScheme.primary,
                         size: 40,
                       ),
                     ),
@@ -143,7 +144,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                     Text(
                       'Touch the fingerprint sensor',
                       style: GoogleFonts.sourceCodePro(
-                        color: Colors.white70,
+                        color: theme.colorScheme.onSurface.withOpacity(0.7),
                         fontSize: 16,
                       ),
                     ),
@@ -158,12 +159,12 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF242A38),
+                          color: theme.colorScheme.surfaceContainerHighest,
                           shape: BoxShape.circle,
                           border: Border.all(
                             color: _errorMessage.isNotEmpty
-                                ? Colors.red
-                                : const Color(0xFF6366F1),
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.primary,
                             width: 2,
                           ),
                         ),
@@ -172,8 +173,8 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                               ? Iconsax.close_circle
                               : Iconsax.finger_scan,
                           color: _errorMessage.isNotEmpty
-                              ? Colors.red
-                              : const Color(0xFF6366F1),
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.primary,
                           size: 40,
                         ),
                       ),
@@ -186,7 +187,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                             _errorMessage,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.sourceCodePro(
-                              color: Colors.red,
+                              color: theme.colorScheme.error,
                               fontSize: 14,
                             ),
                           ),
@@ -194,8 +195,8 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                           ElevatedButton(
                             onPressed: _attemptBiometricAuth,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6366F1),
-                              foregroundColor: Colors.white,
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: theme.colorScheme.onPrimary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -211,7 +212,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                       Text(
                         'Tap to authenticate',
                         style: GoogleFonts.sourceCodePro(
-                          color: Colors.white70,
+                          color: theme.colorScheme.onSurface.withOpacity(0.7),
                           fontSize: 14,
                         ),
                       ),
@@ -226,7 +227,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 child: Text(
                   'Skip for now',
                   style: GoogleFonts.sourceCodePro(
-                    color: Colors.white54,
+                    color: theme.colorScheme.onSurface.withOpacity(0.5),
                     fontSize: 16,
                   ),
                 ),

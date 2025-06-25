@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'dart:io';
 import '../services/auth_service.dart';
+import '../services/theme_provider.dart';
 import '../repos/chat_repo.dart';
 import '../models/user.dart';
 
@@ -182,20 +184,26 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1E29),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF242A38),
+        backgroundColor: theme.appBarTheme.backgroundColor,
         elevation: 0,
         title: Text(
           'Settings',
           style: GoogleFonts.sourceCodePro(
             fontSize: 18,
             fontWeight: FontWeight.w600,
+            color: theme.appBarTheme.foregroundColor,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Iconsax.arrow_left),
+          icon: Icon(
+            Iconsax.arrow_left,
+            color: theme.appBarTheme.foregroundColor,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -206,7 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: const Color(0xFF242A38),
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -215,7 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundColor: const Color(0xFF6366F1),
+                      backgroundColor: theme.colorScheme.primary,
                       backgroundImage: _currentUser?.profileImagePath != null
                           ? FileImage(File(_currentUser!.profileImagePath!))
                           : null,
@@ -225,10 +233,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                       .substring(0, 1)
                                       .toUpperCase() ??
                                   'U',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: theme.colorScheme.onPrimary,
                               ),
                             )
                           : null,
@@ -241,23 +249,23 @@ class _SettingsPageState extends State<SettingsPage> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF6366F1),
+                            color: theme.colorScheme.primary,
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: const Color(0xFF242A38), width: 2),
+                                color: theme.colorScheme.surface, width: 2),
                           ),
                           child: _loading
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 12,
                                   height: 12,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
+                                    color: theme.colorScheme.onPrimary,
                                   ),
                                 )
-                              : const Icon(
+                              : Icon(
                                   Iconsax.camera,
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   size: 16,
                                 ),
                         ),
@@ -271,14 +279,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   style: GoogleFonts.sourceCodePro(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   _currentUser?.email ?? '',
                   style: GoogleFonts.sourceCodePro(
                     fontSize: 14,
-                    color: Colors.white70,
+                    color: theme.colorScheme.onSurface.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -293,13 +301,13 @@ class _SettingsPageState extends State<SettingsPage> {
             style: GoogleFonts.sourceCodePro(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF242A38),
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -314,7 +322,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   title: Text(
                     'Biometric Authentication',
                     style: GoogleFonts.sourceCodePro(
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                       fontSize: 16,
                     ),
                   ),
@@ -323,7 +331,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ? 'Use fingerprint or face unlock'
                         : 'Not available on this device',
                     style: GoogleFonts.sourceCodePro(
-                      color: Colors.white54,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 12,
                     ),
                   ),
@@ -332,6 +340,50 @@ class _SettingsPageState extends State<SettingsPage> {
                     onChanged: _isBiometricAvailable ? _toggleBiometric : null,
                     activeColor: const Color(0xFF6366F1),
                   ),
+                ),
+                const Divider(
+                  height: 1,
+                ),
+                Consumer<ThemeProvider>(
+                  builder: (context, themeProvider, child) {
+                    return ListTile(
+                      leading: Icon(
+                        themeProvider.isDarkMode ? Iconsax.moon : Iconsax.sun_1,
+                        color: const Color(0xFF6366F1),
+                      ),
+                      title: Text(
+                        'Light Theme',
+                        style: GoogleFonts.sourceCodePro(
+                          color: theme.colorScheme.onSurface,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        themeProvider.isDarkMode
+                            ? 'Dark mode is enabled'
+                            : 'Light mode is enabled',
+                        style: GoogleFonts.sourceCodePro(
+                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          fontSize: 12,
+                        ),
+                      ),
+                      trailing: Switch(
+                        value: !themeProvider.isDarkMode, // ON = light mode
+                        onChanged: (value) {
+                          if (value) {
+                            // Switch to light mode
+                            if (themeProvider.isDarkMode)
+                              themeProvider.toggleTheme();
+                          } else {
+                            // Switch to dark mode
+                            if (!themeProvider.isDarkMode)
+                              themeProvider.toggleTheme();
+                          }
+                        },
+                        activeColor: const Color(0xFF6366F1),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -345,13 +397,13 @@ class _SettingsPageState extends State<SettingsPage> {
             style: GoogleFonts.sourceCodePro(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF242A38),
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(
@@ -368,7 +420,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   subtitle: Text(
                     'Delete all saved conversations',
                     style: GoogleFonts.sourceCodePro(
-                      color: Colors.white54,
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
                       fontSize: 12,
                     ),
                   ),

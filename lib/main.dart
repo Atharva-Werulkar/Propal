@@ -4,7 +4,9 @@ import 'package:propal/pages/home_page.dart';
 import 'package:propal/pages/login_page.dart';
 import 'package:propal/pages/biometric_auth_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'services/auth_service.dart';
+import 'services/theme_provider.dart';
 import 'repos/chat_repo.dart';
 
 Future<void> main() async {
@@ -18,44 +20,49 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: FutureBuilder<bool>(
-        future: AuthService.isLoggedIn(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SplashScreen();
-          }
-
-          if (snapshot.data == true) {
-            // User exists, check if biometric is enabled
-            return FutureBuilder<bool>(
-              future: SecureStorageService.isBiometricEnabled(),
-              builder: (context, biometricSnapshot) {
-                if (biometricSnapshot.connectionState ==
-                    ConnectionState.waiting) {
+    return ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode:
+                themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: FutureBuilder<bool>(
+              future: AuthService.isLoggedIn(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SplashScreen();
                 }
 
-                if (biometricSnapshot.data == true) {
-                  // Biometric is enabled, show biometric auth page
-                  return const BiometricAuthPage();
+                if (snapshot.data == true) {
+                  // User exists, check if biometric is enabled
+                  return FutureBuilder<bool>(
+                    future: SecureStorageService.isBiometricEnabled(),
+                    builder: (context, biometricSnapshot) {
+                      if (biometricSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const SplashScreen();
+                      }
+
+                      if (biometricSnapshot.data == true) {
+                        // Biometric is enabled, show biometric auth page
+                        return const BiometricAuthPage();
+                      } else {
+                        // Biometric not enabled, go directly to home
+                        return const HomePage();
+                      }
+                    },
+                  );
                 } else {
-                  // Biometric not enabled, go directly to home
-                  return const HomePage();
+                  return const LoginPage();
                 }
               },
-            );
-          } else {
-            return const LoginPage();
-          }
+            ),
+          );
         },
-      ),
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF1A1E29),
-        primaryColor: const Color(0xFF242A38),
-        fontFamily: GoogleFonts.sourceCodePro().fontFamily,
       ),
     );
   }
@@ -66,8 +73,10 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1E29),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -85,12 +94,12 @@ class SplashScreen extends StatelessWidget {
               style: GoogleFonts.sourceCodePro(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 40),
-            const CircularProgressIndicator(
-              color: Color(0xFF6366F1),
+            CircularProgressIndicator(
+              color: theme.colorScheme.primary,
             ),
           ],
         ),
