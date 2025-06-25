@@ -1,51 +1,83 @@
-import 'dart:convert';
+class ChatMessage {
+  final String id;
+  final String content;
+  final bool isFromUser;
+  final DateTime timestamp;
 
-class ChatMessageModel {
-  final String role;
-  final List<ChatPartModel> parts;
+  ChatMessage({
+    required this.id,
+    required this.content,
+    required this.isFromUser,
+    required this.timestamp,
+  });
 
-  ChatMessageModel({required this.role, required this.parts});
-
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'role': role,
-      'parts': parts.map((x) => x.toMap()).toList(),
+      'id': id,
+      'content': content,
+      'isFromUser': isFromUser,
+      'timestamp': timestamp.millisecondsSinceEpoch,
     };
   }
 
-  factory ChatMessageModel.fromMap(Map<String, dynamic> map) {
-    return ChatMessageModel(
-      role: map['role'] ?? '',
-      parts: List<ChatPartModel>.from(
-          map['parts']?.map((x) => ChatPartModel.fromMap(x))),
+  factory ChatMessage.fromJson(Map<String, dynamic> json) {
+    return ChatMessage(
+      id: json['id'] ?? '',
+      content: json['content'] ?? '',
+      isFromUser: json['isFromUser'] ?? false,
+      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] ?? 0),
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory ChatMessageModel.fromJson(String source) =>
-      ChatMessageModel.fromMap(json.decode(source));
 }
 
-class ChatPartModel {
-  final String text;
+class PropalChatSession {
+  final String id;
+  final String title;
+  final List<ChatMessage> messages;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  ChatPartModel({required this.text});
+  PropalChatSession({
+    required this.id,
+    required this.title,
+    required this.messages,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
-      'text': text,
+      'id': id,
+      'title': title,
+      'messages': messages.map((m) => m.toJson()).toList(),
+      'createdAt': createdAt.millisecondsSinceEpoch,
+      'updatedAt': updatedAt.millisecondsSinceEpoch,
     };
   }
 
-  factory ChatPartModel.fromMap(Map<String, dynamic> map) {
-    return ChatPartModel(
-      text: map['text'] ?? '',
+  factory PropalChatSession.fromJson(Map<String, dynamic> json) {
+    return PropalChatSession(
+      id: json['id'],
+      title: json['title'],
+      messages: (json['messages'] as List)
+          .map((m) => ChatMessage.fromJson(m))
+          .toList(),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt']),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(json['updatedAt']),
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory ChatPartModel.fromJson(String source) =>
-      ChatPartModel.fromMap(json.decode(source));
+  PropalChatSession copyWith({
+    String? title,
+    List<ChatMessage>? messages,
+    DateTime? updatedAt,
+  }) {
+    return PropalChatSession(
+      id: id,
+      title: title ?? this.title,
+      messages: messages ?? this.messages,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }

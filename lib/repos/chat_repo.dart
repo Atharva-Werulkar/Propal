@@ -1,54 +1,83 @@
-import 'package:dio/dio.dart';
-import 'package:propal/models/chat_model.dart';
-import 'package:propal/utils/constants.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user.dart';
+import '../models/chat_model.dart';
 
-class ChatRepo {
-  static Future<String> chatGenerationRepo(
-      List<ChatMessageModel> previousMessages) async {
-    try {
-      Dio dio = Dio();
-      final response = await dio.post(
-          "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${api_key}",
-          data: {
-            "contents": previousMessages.map((e) => e.toMap()).toList(),
-            "generationConfig": {
-              "temperature": 0.5,
-              "topK": 1,
-              "topP": 1,
-              "maxOutputTokens": 2048,
-              "stopSequences": []
-            },
-            "safetySettings": [
-              {
-                "category": "HARM_CATEGORY_HARASSMENT",
-                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                "category": "HARM_CATEGORY_HATE_SPEECH",
-                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_MEDIUM_AND_ABOVE"
-              }
-            ]
-          });
+class SecureStorageService {
+  // User Management
+  static Future<void> saveUser(User user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_user', jsonEncode(user.toJson()));
+  }
 
-      print(response.toString());
-
-      if (response.statusCode == 200) {
-        return response
-            .data['candidates'].first['content']['parts'].first['text'];
-      } else {
-        return "Error";
-      }
-    } catch (e) {
-      print(e);
-      return "Error";
+  static Future<User?> getCurrentUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('current_user');
+    if (userJson != null) {
+      return User.fromJson(jsonDecode(userJson));
     }
+    return null;
+  }
+
+  static Future<void> clearUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('current_user');
+  }
+
+  // Chat History Management
+  static Future<void> saveChatSessions(List<PropalChatSession> sessions) async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessionsJson = sessions.map((s) => s.toJson()).toList();
+    await prefs.setString('chat_sessions', jsonEncode(sessionsJson));
+  }
+
+  static Future<List<PropalChatSession>> getChatSessions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessionsJson = prefs.getString('chat_sessions');
+    if (sessionsJson != null) {
+      final List<dynamic> sessions = jsonDecode(sessionsJson);
+      return sessions.map((s) => PropalChatSession.fromJson(s)).toList();
+    }
+    return [];
+  }
+
+  static Future<void> saveChatSession(PropalChatSession session) async {
+    final sessions = await getChatSessions();
+    final existingIndex = sessions.indexWhere((s) => s.id == session.id);
+
+    if (existingIndex != -1) {
+      sessions[existingIndex] = session;
+    } else {
+      sessions.add(session);
+    }
+
+    await saveChatSessions(sessions);
+  }
+
+  static Future<void> deleteChatSession(String sessionId) async {
+    final sessions = await getChatSessions();
+    sessions.removeWhere((s) => s.id == sessionId);
+    await saveChatSessions(sessions);
+  }
+
+  // App Settings
+  static Future<void> setBiometricEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('biometric_enabled', enabled);
+  }
+
+  static Future<bool> isBiometricEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('biometric_enabled') ?? false;
+  }
+
+  static Future<void> setTheme(String theme) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_theme', theme);
+  }
+
+  static Future<String> getTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('app_theme') ?? 'dark';
   }
 }
